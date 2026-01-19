@@ -201,9 +201,10 @@ def _deno_run_args(
 ) -> list[str]:
     args = ['run']
     if offline:
-        # In offline mode, use cached dependencies only (no network access)
+        # In offline mode, use cached dependencies only (no network access for downloads)
         args += ['--cached-only']
-    if allow_networking and not offline:
+    if allow_networking:
+        # Allow network for server to listen on port (even in offline mode)
         args += ['--allow-net']
     args += [
         '--allow-read=./node_modules',

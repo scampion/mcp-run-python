@@ -21,6 +21,10 @@ RUN deno install --allow-scripts --entrypoint src/main.ts
 # Also cache to ensure all deps are resolved
 RUN deno cache src/main.ts
 
+# Pre-cache pyodide packages (micropip, pydantic) by running noop mode
+# This downloads pyodide Python packages during build so they're available offline
+RUN deno run --allow-net --allow-read --allow-write=./node_modules --node-modules-dir=auto src/main.ts noop
+
 WORKDIR /app
 
 # Define default executable with --offline to prevent network calls
