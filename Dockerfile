@@ -23,7 +23,10 @@ RUN deno cache src/main.ts
 
 # Pre-cache pyodide packages (micropip, pydantic) by running noop mode
 # This downloads pyodide Python packages during build so they're available offline
-RUN deno run --allow-net --allow-read --allow-write=./node_modules --node-modules-dir=auto src/main.ts noop
+# Skip on ARM64 due to Pyodide enum initialization bug
+RUN if [ "$(uname -m)" != "aarch64" ]; then \
+      deno run --allow-net --allow-read --allow-write=./node_modules --node-modules-dir=auto src/main.ts noop; \
+    fi
 
 WORKDIR /app
 
