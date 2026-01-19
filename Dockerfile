@@ -14,15 +14,17 @@ RUN uv sync --frozen --compile-bytecode
 # or rather 'make build'?
 RUN uv run build/build.py
 
-# Prepare the deno bits
+# Prepare the deno bits - install all dependencies including npm packages
 WORKDIR /app/mcp_run_python/deno
-# no deno task build defined, replaced
+# Use deno install to download all dependencies into node_modules
+RUN deno install --allow-scripts --entrypoint src/main.ts
+# Also cache to ensure all deps are resolved
 RUN deno cache src/main.ts
 
 WORKDIR /app
 
-# Define default executable
-ENTRYPOINT ["uv", "run", "mcp-run-python"]
+# Define default executable with --offline to prevent network calls
+ENTRYPOINT ["uv", "run", "mcp-run-python", "--offline"]
 
 # Advertise default port used in default CMD
 EXPOSE 3001
